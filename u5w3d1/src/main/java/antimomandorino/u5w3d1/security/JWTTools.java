@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.UUID;
 
 @Component
 public class JWTTools {
@@ -33,5 +34,12 @@ public class JWTTools {
             throw new UnauthorizedException("Ci sono stati errori nel token! Effettua di nuovo il login!");
         }
 
+    }
+
+    public UUID extractIdFromToken(String accessToken) {
+        return UUID.fromString(Jwts.parser().verifyWith(Keys.hmacShaKeyFor(secret.getBytes()))
+                .build()
+                .parseSignedClaims(accessToken)
+                .getPayload().getSubject());
     }
 }

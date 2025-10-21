@@ -1,16 +1,23 @@
 package antimomandorino.u5w3d1.entities;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Generated;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
 @Table(
         name = "dipendenti"
 )
-public class Dipendente {
+@JsonIgnoreProperties({"password", "authorities", "enabled", "accountNonLocked", "accountNonExpired", "credentialsNonExpired"})
+public class Dipendente implements UserDetails {
     @Id
     @GeneratedValue
     @Column(
@@ -29,6 +36,8 @@ public class Dipendente {
             name = "immagine_profilo"
     )
     private String immagineProfilo;
+    @Enumerated(EnumType.STRING)
+    private DipendenteRole role;
 
     public Dipendente(String username, String nome, String cognome, String email, String password) {
         this.username = username;
@@ -38,6 +47,7 @@ public class Dipendente {
         this.password = password;
         String nomecompleto = this.nome + "+" + this.cognome;
         this.immagineProfilo = "https://ui-avatars.com/api/?name=" + nomecompleto;
+        this.role = DipendenteRole.USER;
     }
 
     @Generated
@@ -97,6 +107,11 @@ public class Dipendente {
     @Generated
     public void setImmagineProfilo(final String immagineProfilo) {
         this.immagineProfilo = immagineProfilo;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority((this.role.name())));
     }
 
     public String getPassword() {

@@ -13,7 +13,7 @@ import java.util.UUID;
 
 @Component
 public class JWTTools {
-    @Value("S{jwt.secret}")
+    @Value("${jwt.secret}")
     private String secret;
 
     public String createToken(Dipendente dipendente) {
